@@ -1,0 +1,6 @@
+1) Install requirements.txt
+2) Install requirements.examples.txt
+3) run sudo [python interpreter] setup.py build
+e.g. sudo /home/tobias/anaconda3/envs/CrypTen_1/bin/python setup.py build
+4) run sudo [python interpreter]  setup.py install
+e.g. sudo /home/tobias/anaconda3/envs/CrypTen_1/bin/python setup.py install
