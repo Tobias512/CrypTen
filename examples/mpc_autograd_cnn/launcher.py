@@ -76,6 +76,20 @@ parser.add_argument(
     metavar="N",
     help="num of samples used for training (default: 100)",
 )
+parser.add_argument(
+    "--num-test-samples",
+    "-t",
+    default=100,
+    type=int,
+    metavar="T",
+    help="num of samples used for testing (default: 100)",
+)
+parser.add_argument(
+    "--multiprocess",
+    default=False,
+    action="store_true",
+    help="Run example in multiprocess mode",
+)
 
 
 def _run_experiment(args):
@@ -95,16 +109,22 @@ def _run_experiment(args):
         batch_size=args.batch_size,
         print_freq=args.print_freq,
         num_samples=args.num_samples,
+        num_test_samples=args.num_test_samples
     )
 
 
 def main(run_experiment):
     args = parser.parse_args()
-    # run multiprocess by default
-    launcher = MultiProcessLauncher(args.world_size, run_experiment, args)
-    launcher.start()
-    launcher.join()
-    launcher.terminate()
+
+    args.checkpoint_dir = "test"
+
+    if args.multiprocess:
+        launcher = MultiProcessLauncher(args.world_size, run_experiment, args)
+        launcher.start()
+        launcher.join()
+        launcher.terminate()
+    else:
+        run_experiment(args)
 
 
 if __name__ == "__main__":
