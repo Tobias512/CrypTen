@@ -146,6 +146,13 @@ class CrossEntropyLoss(_Loss):
         assert x.size() == y.size(), "input and target must have the same size"
         return x.cross_entropy(y, skip_forward=self.skip_forward)
 
+class CrossEntropyLossNoReduction(_Loss):
+    def forward(self, x, y):
+        x = x.squeeze()
+        y = y.squeeze()
+        assert x.size() == y.size(), "input and target must have the same size"
+        return x.cross_entropy_no_reduction(y, skip_forward=self.skip_forward)
+
 
 class BCEWithLogitsLoss(_Loss):
     r"""
