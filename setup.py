@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/sudo /home/tobias/anaconda3/envs/CrypTen3/bin/python
 
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     setuptools.setup(
         name=DISTNAME,
-        install_requires=REQUIREMENTS,
+        #install_requires=REQUIREMENTS,
         packages=setuptools.find_packages(),
         dependency_links=[],
         version=VERSION,
