@@ -8,7 +8,7 @@
 
 from .init import *  # noqa: F403
 from .distances import CosineSimilarity
-from .loss import _Loss, BCELoss, BCEWithLogitsLoss, CrossEntropyLoss, L1Loss, MSELoss
+from .loss import _Loss, BCELoss, BCEWithLogitsLoss, CrossEntropyLoss, CrossEntropyLossNoReduction, L1Loss, MSELoss
 from .module import (
     AdaptiveAvgPool2d,
     AdaptiveMaxPool2d,
@@ -98,6 +98,7 @@ __all__ = [  # noqa: F405
     "Conv2d",
     "CosineSimilarity",
     "CrossEntropyLoss",
+    "CrossEntropyLossNoReduction",
     "Div",
     "Dropout",
     "Dropout2d",
