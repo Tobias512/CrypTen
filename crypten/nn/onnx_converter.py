@@ -130,6 +130,7 @@ def _export_pytorch_model(f, pytorch_model, dummy_input):
         "input_names": ["input"],
         "operator_export_type": OperatorExportTypes.ONNX,
         "output_names": ["output"],
+        "opset_version": 10,
     }
     torch.onnx.export(pytorch_model, dummy_input, f, **kwargs)
     return f
