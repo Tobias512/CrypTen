@@ -2935,3 +2935,16 @@ def _identify_bool_attributes_with_defaults(
     if attr_name in attributes and attributes[attr_name] != attr_value:
         output = not default
     return output
+
+
+class Identity(Module):
+    """
+    Module that is the Identity
+    """
+
+    def forward(self, input):
+        return input
+
+    @staticmethod
+    def from_onnx(attributes=None):
+        return Identity()
