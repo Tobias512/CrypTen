@@ -38,7 +38,7 @@ functions:
   erf_iterations: 8
 mpc:
   active_security: False
-  provider: "TTP"
+  provider: "TFP"
   protocol: "beaver"
 nn:
   dpsmpc:
