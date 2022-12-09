@@ -190,9 +190,9 @@ class CUDALongTensor(object):
     def __patched_conv_ops(op, x, y, *args, **kwargs):
         if "groups" in kwargs:
             groups = kwargs["groups"]
-            assert (
-                groups == 1
-            ), f"more than one group is unsupported on GPU (groups = {groups})"
+            # assert (
+            #     groups == 1
+            # ), f"more than one group is unsupported on GPU (groups = {groups})"
             del kwargs["groups"]
 
         bs, c, *img = x.size()
@@ -215,7 +215,7 @@ class CUDALongTensor(object):
         c_z = c_out if op in ["conv1d", "conv2d"] else c_in
 
         z_encoded = getattr(torch, op)(
-            x_enc_span, y_enc_span, *args, **kwargs, groups=nb2
+            x_enc_span, y_enc_span, *args, **kwargs, groups=(nb2 * groups)
         )
         z_encoded = z_encoded.reshape(bs, nb2, c_z, *z_encoded.size()[2:]).transpose_(
             0, 1
