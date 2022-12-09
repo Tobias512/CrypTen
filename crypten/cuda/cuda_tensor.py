@@ -190,10 +190,9 @@ class CUDALongTensor(object):
     def __patched_conv_ops(op, x, y, *args, **kwargs):
         if "groups" in kwargs:
             groups = kwargs["groups"]
-            # assert (
-            #     groups == 1
-            # ), f"more than one group is unsupported on GPU (groups = {groups})"
             del kwargs["groups"]
+        else:
+            groups = 1
 
         bs, c, *img = x.size()
         c_out, c_in, *ks = y.size()
