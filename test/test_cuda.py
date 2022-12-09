@@ -188,19 +188,19 @@ class TestCUDA(TestMPC):
 
     def test_conv2d_square_image_one_channel(self):
         self._patched_conv2d((5, 5), 1)
-        self._conv2d((5, 5), 1)
+        self._conv2d((5, 5), 1, "conv2d")
 
     def test_conv2d_square_image_many_channels(self):
         self._patched_conv2d((5, 5), 5)
-        self._conv2d((5, 5), 5)
+        self._conv2d((5, 5), 5, "conv2d")
 
     def test_conv2d_rectangular_image_one_channel(self):
         self._patched_conv2d((16, 7), 1)
-        self._conv2d((16, 7), 1)
+        self._conv2d((16, 7), 1, "conv2d")
 
     def test_conv2d_rectangular_image_many_channels(self):
         self._patched_conv2d((16, 7), 5)
-        self._conv2d((16, 7), 5)
+        self._conv2d((16, 7), 5, "conv2d")
 
     def test_conv2d_large_kernel(self):
         self.nbatches = [1]
