@@ -1792,7 +1792,11 @@ class _ConstantPad(Module):
             input = input[0]
         else:
             padding = self.padding
-        return input.pad(padding, value=self.value, mode=self.mode)
+
+        if torch.is_tensor(input):
+            return torch.nn.functional.pad(input, padding, value=self.value, mode=self.mode)
+        else:
+            return input.pad(padding, value=self.value, mode=self.mode)
 
     @staticmethod
     def from_onnx(attributes=None):
@@ -1993,7 +1997,7 @@ class Conv(Module):
         # identify correct convolution function to use:
         if torch.is_tensor(x):
             func = getattr(torch.nn.functional, f"conv{dim}d", None)
-            args = [x] + args + bias  # torch function takes different inputs
+            args = [x] + args + [bias]  # torch function takes different inputs
         else:
             func = getattr(x, f"conv{dim}d", None)
 
@@ -2550,9 +2554,15 @@ class _Pool2d(Module):
             "ceil_mode": self.ceil_mode,
         }
         if self.pool_type == "average":
-            return x.avg_pool2d(*args, **kwargs)
+            if torch.is_tensor(x):
+                return torch.nn.functional.avg_pool2d(x, *args, **kwargs)
+            else:
+                return x.avg_pool2d(*args, **kwargs)
         elif self.pool_type == "max":
-            return x.max_pool2d(*args, **kwargs)
+            if torch.is_tensor(x):
+                return torch.nn.functional.max_pool2d(x, *args, **kwargs)
+            else:
+                return x.max_pool2d(*args, **kwargs)
         else:
             raise ValueError("Unknown pooling type: %s" % self.pool_type)
 
