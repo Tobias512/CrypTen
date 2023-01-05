@@ -1757,7 +1757,17 @@ class _ConstantPad(Module):
         self.mode = mode
 
     def forward(self, input):
-        return input.pad(self.padding, value=self.value, mode="constant")
+        if isinstance(input, list):
+            assert len(input) == 2, "input should be [tensor, pads] list"
+            padding = tuple(input[1].int().tolist())
+            input = input[0]
+        else:
+            padding = self.padding
+
+        if torch.is_tensor(input):
+            return torch.nn.functional.pad(input, padding, value=self.value, mode=self.mode)
+        else:
+            return input.pad(padding, value=self.value, mode=self.mode)
 
     @staticmethod
     def from_onnx(attributes=None):
