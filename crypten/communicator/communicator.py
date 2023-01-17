@@ -16,6 +16,18 @@ class Communicator:
     Abstract class defining the functions that a Communicator should implement.
     """
 
+    # Determines whether communicators log communication stats
+    __verbosity = False
+
+    @classmethod
+    def is_verbose(cls):
+        return cls.__verbosity
+
+    @classmethod
+    def set_verbosity(cls, verbosity):
+        assert isinstance(verbosity, bool), "Verbosity must be a boolean value"
+        cls.__verbosity = verbosity
+
     @classmethod
     def is_initialized(cls):
         """Returns whether the communicator has been initialized"""
