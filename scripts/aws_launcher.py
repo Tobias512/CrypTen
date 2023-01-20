@@ -214,7 +214,10 @@ def main():
             print(instance.public_ip_address)
         return
 
-    world_size = len(instances)
+    if len(instances) == 3:
+        world_size = len(instances) - 1
+    else:
+        world_size = len(instances)
     print(f"Running world size {world_size} with instances: {instances}")
     master_instance = instances[0]
 
@@ -254,6 +257,7 @@ def main():
                 )
     for instance_id, client in client_dict.items():
         run_command(instance_id, client, f"chmod +x {remote_script}")
+        run_command(instance_id, client, f"chmod +x {remote_dir}/launch_TTPServer.py")
         run_command(instance_id, client, f"ls -al {remote_dir}")
 
     environment = {
@@ -261,29 +265,44 @@ def main():
         "RENDEZVOUS": "env://",
         "MASTER_ADDR": master_instance.private_ip_address,
         "MASTER_PORT": str(args.master_port),
+        "TORCH_CPP_LOG_LEVEL": "INFO",
+        "TORCH_DISTRIBUTED_DEBUG": "DETAIL"
     }
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=world_size) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(instances)) as executor:
         rank = 0
         for instance_id, client in client_dict.items():
-            environment["RANK"] = str(rank)
-            # TODO: Although paramiko.SSHClient.exec_command() can accept
-            # an argument `environment`, it seems not to take effect in
-            # practice. It might because "Servers may silently reject
-            # some environment variables" according to paramiko document.
-            # As a workaround, here all environment variables are explicitly
-            # exported.
-            environment_cmd = "; ".join(
-                [f"export {key}={value}" for (key, value) in environment.items()]
-            )
-            prepare_cmd = f"{args.prepare_cmd}; " if args.prepare_cmd else ""
-            cmd = "{}; {} {} {} {}".format(
-                environment_cmd,
-                f"cd {remote_dir} ;",
-                prepare_cmd,
-                f"./{script_basename}",
-                " ".join(args.training_script_args),
-            )
+            if rank < world_size:
+                environment["RANK"] = str(rank)
+                # TODO: Although paramiko.SSHClient.exec_command() can accept
+                # an argument `environment`, it seems not to take effect in
+                # practice. It might because "Servers may silently reject
+                # some environment variables" according to paramiko document.
+                # As a workaround, here all environment variables are explicitly
+                # exported.
+                environment_cmd = "; ".join(
+                    [f"export {key}={value}" for (key, value) in environment.items()]
+                )
+                prepare_cmd = f"{args.prepare_cmd}; " if args.prepare_cmd else ""
+                cmd = "{}; {} {} {} {}".format(
+                    environment_cmd,
+                    f"cd {remote_dir} ;",
+                    prepare_cmd,
+                    f"./{script_basename}",
+                    " ".join(args.training_script_args),
+                )
+            else:
+                environment["RANK"] = str(rank)
+                environment_cmd = "; ".join(
+                    [f"export {key}={value}" for (key, value) in environment.items()]
+                )
+                prepare_cmd = f"{args.prepare_cmd}; " if args.prepare_cmd else ""
+                cmd = "{}; {} {} {}".format(
+                    environment_cmd,
+                    f"cd {remote_dir} ;",
+                    prepare_cmd,
+                    f"./launch_TTPServer.py"
+                )
             print(f"Run command: {cmd}")
             executor.submit(run_command, instance_id, client, cmd, environment)
             rank += 1

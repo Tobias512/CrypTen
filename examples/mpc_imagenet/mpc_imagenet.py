@@ -15,6 +15,7 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from examples.meters import AccuracyMeter
 from examples.util import NoopContextManager
+import crypten.communicator as comm
 
 
 try:
@@ -33,6 +34,10 @@ def run_experiment(
     """Runs inference using specified vision model on specified dataset."""
 
     crypten.init()
+
+    comm.get().set_verbosity(True)
+    print(comm.get().is_verbose())
+
     # check inputs:
     assert hasattr(models, model_name), (
         "torchvision does not provide %s model" % model_name
@@ -49,7 +54,7 @@ def run_experiment(
     with context_manager:
         model = getattr(models, model_name)(pretrained=True)
         model.eval()
-        dataset = datasets.ImageNet(imagenet_folder, split="val", download=download)
+        dataset = datasets.ImageNet(imagenet_folder, split="val")
 
     # define appropriate transforms:
     transform = transforms.Compose(
@@ -98,6 +103,10 @@ def run_experiment(
         )
         if num_samples is not None and idx == num_samples - 1:
             break
+
+        comm_inst = comm.get()
+
+        comm.get().print_communication_stats()
 
     # print final accuracy:
     logging.info("Accuracy on all %d samples: %f" % (len(dataset), meter.value()[1]))

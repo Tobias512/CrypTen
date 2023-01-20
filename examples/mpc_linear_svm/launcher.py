@@ -22,6 +22,7 @@ $ python3 scripts/aws_launcher.py \
 import argparse
 import logging
 import os
+import time
 
 from examples.multiprocess_launcher import MultiProcessLauncher
 
@@ -64,6 +65,8 @@ parser.add_argument(
 
 
 def _run_experiment(args):
+    time.sleep(3)
+
     level = logging.INFO
     if "RANK" in os.environ and os.environ["RANK"] != "0":
         level = logging.CRITICAL

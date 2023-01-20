@@ -44,7 +44,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--imagenet_folder",
-    default=None,
+    default="~/data/imagenet/",
     type=str,
     help="folder containing the ImageNet dataset",
 )
