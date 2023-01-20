@@ -1,10 +1,10 @@
 communicator:
-  verbose: False
+  verbose: True
 debug:
   debug_mode: False
   validation_mode: False
 encoder:
-  precision_bits: 16
+  precision_bits: 22
 functions:
   max_method: "log_reduction"
 
