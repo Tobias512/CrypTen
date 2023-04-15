@@ -85,7 +85,6 @@ class CUDALongTensor(object):
         if func not in HANDLED_FUNCTIONS or not all(
             issubclass(t, (torch.Tensor, CUDALongTensor)) for t in types
         ):
-            args = [CUDALongTensor(t) if torch.is_tensor(t) else t for t in args]       # convert normal tensors to CUDALongTensor to ensure all tensors are on the correct device
             args = [t.tensor() if hasattr(t, "tensor") else t for t in args]
             result = func(*args, **kwargs)
             if torch.is_tensor(result):

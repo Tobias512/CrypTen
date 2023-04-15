@@ -1159,7 +1159,7 @@ class AutogradSum(AutogradFunction):
 
         if not keepdim and dim is not None:
             grad_output = grad_output.unsqueeze(dim)
-        return grad_output.mul(torch.ones(input_size))
+        return grad_output.mul(torch.ones(input_size, device=grad_output.device))
 
 
 @register_function("cumsum")
