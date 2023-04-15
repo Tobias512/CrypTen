@@ -2057,4 +2057,6 @@ class AutogradCrossEntropyNoReduction(AutogradFunction):
 
     @staticmethod
     def backward(ctx, grad_output):
-        raise NotImplementedError
+        softmax, target = ctx.saved_tensors
+        loss_grad = softmax.sub(target)
+        return loss_grad.t().mul_(grad_output).t()
