@@ -2997,3 +2997,16 @@ class Identity(Module):
     @staticmethod
     def from_onnx(attributes=None):
         return Identity()
+
+
+class Tanh(Module):
+    """
+    Module that is the Tanh
+    """
+
+    def forward(self, input):
+        return input.tanh()
+
+    @staticmethod
+    def from_onnx(attributes=None):
+        return Tanh()
