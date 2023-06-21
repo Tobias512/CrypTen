@@ -211,14 +211,14 @@ class TTPClient:
 class TTPServer:
     TERMINATE = -1
 
-    def __init__(self):
+    def __init__(self, device=None):
         """Initializes a Trusted Third Party server that receives requests"""
         # Initialize connection
         crypten.init()
         self.ttp_group = comm.get().ttp_group
         self.comm_group = comm.get().ttp_comm_group
         self.device = "cpu"
-        self._setup_generators()
+        self._setup_generators(device)
         ttp_rank = comm.get().get_ttp_rank()
 
         logging.info("TTPServer Initialized")
@@ -247,9 +247,11 @@ class TTPServer:
             logging.info("Encountered Runtime error. TTPServer shutting down:")
             logging.info(f"{err}")
 
-    def _setup_generators(self):
+    def _setup_generators(self, device):
         """Create random generator to send to a party"""
         ws = comm.get().get_world_size()
+
+        device_cuda = device if device is not None and device.type == "cuda" else "cuda"
 
         seeds = [torch.randint(-(2**63), 2**63 - 1, size=()) for _ in range(ws)]
         reqs = [
@@ -257,7 +259,7 @@ class TTPServer:
         ]
         self.generators = [torch.Generator(device="cpu") for _ in range(ws)]
         self.generators_cuda = [
-            (torch.Generator(device="cuda") if torch.cuda.is_available() else None)
+            (torch.Generator(device=device_cuda) if torch.cuda.is_available() else None)
             for _ in range(ws)
         ]
 
